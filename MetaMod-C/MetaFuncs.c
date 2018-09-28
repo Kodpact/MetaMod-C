@@ -32,25 +32,29 @@ static void MF_LogConsole(PluginInfo *Info, const char *Format, ...)
 	va_end(VList);
 	Buffer[Bytes] = '\n';
 	Buffer[Bytes + 1] = '\0';
-	EngineFuncs.pfnServerPrint(Buffer);
+	SERVER_PRINT(Buffer);
 }
 
 static void MF_LogMessage(PluginInfo *Info, const char *Format, ...)
 {
 	va_list VList;
 	va_start(VList, Format);
-	vsnprintf(Buffer, 1022, Format, VList);
+	int Bytes = vsnprintf(Buffer, 1023, Format, VList);
 	va_end(VList);
-	EngineFuncs.pfnAlertMessage(at_logged, "[%s] %s", Info->LogTag, Buffer);
+	Buffer[Bytes] = '\n';
+	Buffer[Bytes + 1] = '\0';
+	ALERT(at_logged, "[%s] %s", Info->LogTag, Buffer);
 }
 
 static void MF_LogError(PluginInfo *Info, const char *Format, ...)
 {
 	va_list VList;
 	va_start(VList, Format);
-	vsnprintf(Buffer, 1022, Format, VList);
+	int Bytes = vsnprintf(Buffer, 1023, Format, VList);
 	va_end(VList);
-	EngineFuncs.pfnAlertMessage(at_logged, "[%s] ERROR: %s", Info->LogTag, Buffer);
+	Buffer[Bytes] = '\n';
+	Buffer[Bytes + 1] = '\0';
+	ALERT(at_logged, "[%s] ERROR: %s", Info->LogTag, Buffer);
 }
 
 static void MF_LogDeveloper(PluginInfo *Info, const char *Format, ...)
@@ -60,9 +64,11 @@ static void MF_LogDeveloper(PluginInfo *Info, const char *Format, ...)
 
 	va_list VList;
 	va_start(VList, Format);
-	vsnprintf(Buffer, 1022, Format, VList);
+	int Bytes = vsnprintf(Buffer, 1023, Format, VList);
 	va_end(VList);
-	EngineFuncs.pfnAlertMessage(at_logged, "[%s] DEV: %s", Info->LogTag, Buffer);
+	Buffer[Bytes] = '\n';
+	Buffer[Bytes + 1] = '\0';
+	ALERT(at_logged, "[%s] DEV: %s", Info->LogTag, Buffer);
 }
 
 static void MF_HudMessage(edict_t *Entity, char *Msg)

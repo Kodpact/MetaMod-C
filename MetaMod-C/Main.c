@@ -65,7 +65,7 @@ static CallGameFunction()
 	{
 		if (Plugins[Index].Status != PL_RUNNING)
 			continue;
-
+		
 		__asm
 		{
 			IMUL EAX, Index, 88
@@ -85,10 +85,10 @@ static CallGameFunction()
 			__asm MOV EAX, Andex
 			__asm PUSH[EBP + EAX * 4 + 4];
 		}
-
+		
 		__asm CALL Function
 		__asm ADD ESP, CountStack
-
+		
 		switch (MGlobals.Result)
 		{
 			case MRES_OVERRIDE: OverrideResult = TRUE; __asm MOV OverrideValue, EAX; break;

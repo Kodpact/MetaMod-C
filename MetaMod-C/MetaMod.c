@@ -45,16 +45,18 @@ BOOL FindMetaPlugin(char *PluginPath, uint32_t PluginHash)
 
 void LoadPlugin(char *Path, PLUG_LOADTIME LT)
 {
+	NormalizePathName(Path);
 	Plugins = realloc(Plugins, (PluginCount + 1) * sizeof(Plugin));
-
+	
 	if (!Plugins)
 	{
 	CantAllocMemory:;
 		ServerPrintColored(TYPE_ERROR, "FATAL ERROR: Cannot Allocate Memory.");
 		return;
 	}
-
-	Plugin *CurPlugin = &Plugins[PluginCount++];
+	
+	Plugin *CurPlugin = &Plugins[PluginCount];
+	PluginCount++;
 	CurPlugin->Info = malloc(sizeof(PluginInfo));
 	
 	if (!CurPlugin->Info)
@@ -158,7 +160,7 @@ extern enginefuncs_t PluginEngineFuncs;
 		!CurPlugin->PostTables.DLL || !CurPlugin->PostTables.NewDLL || !CurPlugin->PostTables.Engine)
 		goto CantAllocMemory;
 
-	static int IV = INTERFACE_VERSION;
+	int IV = INTERFACE_VERSION;
 	CheckAndCallExport(GETENTITYAPI_FN, pfnGetEntityAPI, "GetEntityAPI", CurPlugin->PreTables.DLL, DLL_FUNCTIONS, INTERFACE_VERSION);
 	CheckAndCallExport(GETENTITYAPI2_FN, pfnGetEntityAPI2, "GetEntityAPI2", CurPlugin->PreTables.DLL, DLL_FUNCTIONS, &IV);
 	
