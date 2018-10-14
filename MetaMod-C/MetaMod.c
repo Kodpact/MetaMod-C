@@ -11,11 +11,11 @@
 extern DLL_FUNCTIONS GameDLLFuncs;
 extern NEW_DLL_FUNCTIONS GameNewDLLFuncs;
 extern IMAGE_DOS_HEADER __ImageBase;
+extern MetaGlobals MGlobals;
 extern Plugin *Plugins;
 extern int PluginCount;
 
 GAME_DLL_FUNCTIONS MFunctions;
-MetaGlobals *MGlobalsPtr;
 char Directory[MAX_PATH];
 char PathName[MAX_PATH];
 
@@ -143,7 +143,7 @@ extern enginefuncs_t PluginEngineFuncs;
 	memcpy(PluginDLLFuncs->NewDLLFuncs, &GameNewDLLFuncs, sizeof(NEW_DLL_FUNCTIONS));
 	
 	int PluginIndex = PluginCount - 1;
-	int Result = FAttach(LT, PluginFuncs, MGlobalsPtr, PluginDLLFuncs);
+	int Result = FAttach(LT, PluginFuncs, &MGlobals, PluginDLLFuncs);
 	CurPlugin = &Plugins[PluginIndex];
 	
 	if (!Result)
@@ -206,6 +206,7 @@ void MetaMod_SetPluginStatus(int Status)
 				return ServerPrintColored(TYPE_WARNING, "Plugin Already Paused (%s).", Desc);
 
 			Plugins[PluginIndex].Status = PL_PAUSED;
+			ServerPrintColored(TYPE_WARNING, "Plugin '%s' Has Been Paused.", Desc);
 			break;
 		}
 		case PL_RUNNING:
@@ -214,6 +215,7 @@ void MetaMod_SetPluginStatus(int Status)
 				return ServerPrintColored(TYPE_WARNING, "Plugin Already Running (%s).", Desc);
 
 			Plugins[PluginIndex].Status = PL_RUNNING;
+			ServerPrintColored(TYPE_WARNING, "Plugin '%s' Has Been Unpaused.", Desc);
 			break;
 		}
 	}
@@ -319,11 +321,10 @@ void MetaCmdHandler(void)
 	return ServerPrintColored(TYPE_WARNING, "Invalid Argument '%s'.", Argument);
 }
 
-int MetaMod_Init(char *GameDir, MetaGlobals *_MGlobalsPtr)
+int MetaMod_Init(char *GameDir)
 {
 	MetaFuncs_Init();
 	REG_SVR_COMMAND("meta", MetaCmdHandler);
-	MGlobalsPtr = _MGlobalsPtr;
 
 	GetModuleFileName(NULL, Directory, sizeof(Directory) - 1);
 	FileToDirectory(Directory);

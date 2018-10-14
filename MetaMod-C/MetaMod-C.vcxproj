@@ -41,14 +41,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.dll</TargetExt>
-    <OutDir>..\Debug\</OutDir>
+    <OutDir>D:\CSDS\cstrike\addons\metamod\dlls\</OutDir>
     <IntDir>..\Debug\Int\</IntDir>
     <TargetName>metamod</TargetName>
     <IncludePath>..\..\SDK\hlsdk\utils;..\..\SDK\hlsdk\public;..\..\SDK\hlsdk\pm_shared;..\..\SDK\hlsdk\engine;..\..\SDK\hlsdk\dlls;..\..\SDK\hlsdk\dedicated;..\..\SDK\hlsdk\common;..\..\SDK\hlsdk\cl_dll;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\Release\</OutDir>
+    <OutDir>D:\CSDS\cstrike\addons\metamod\dlls\</OutDir>
     <IntDir>..\Release\Int\</IntDir>
     <TargetName>metamod</TargetName>
     <TargetExt>.dll</TargetExt>
@@ -79,7 +79,7 @@
       <AssemblerOutput>NoListing</AssemblerOutput>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4024;4028;4033;4047;4057;4098;4113;4115;4127;4431;4133;4152;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

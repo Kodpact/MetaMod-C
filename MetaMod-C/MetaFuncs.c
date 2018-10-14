@@ -19,6 +19,8 @@ static char Buffer[1024];
 static hudtextparms_t HUDParams;
 static cvar_t *Developer;
 
+int RequestIDCounter = 0;
+
 void MetaFuncs_Init(void)
 {
 	Developer = EngineFuncs.pfnCVarGetPointer("developer");
@@ -158,10 +160,13 @@ static int MF_GetUserMsgID(PluginInfo *Info, const char *Name, int *Size)
 	{
 		if (Size)
 			*Size = Messages[Index - 64].Size;
+
 		return Index;
 	}
 	else
+	{
 		return 0;
+	}
 }
 
 static const char *MF_GetUserMsgName(PluginInfo *Info, int MsgID, int *Size)
@@ -170,7 +175,10 @@ static const char *MF_GetUserMsgName(PluginInfo *Info, int MsgID, int *Size)
 		return "";
 	
 	MetaMsg *CurMsg = &Messages[MsgID - 64];
-	*Size = CurMsg->Size;
+
+	if (Size)
+		*Size = CurMsg->Size;
+
 	return CurMsg->Name;
 }
 
@@ -241,7 +249,6 @@ static const char *MF_IsQueryingClientCvar(PluginInfo *Info, const edict_t *play
 
 static int MF_MakeRequestID(PluginInfo *Info)
 {
-	static int RequestIDCounter = 0;
 	return (abs(0xbeef << 16) + (++RequestIDCounter));
 }
 
