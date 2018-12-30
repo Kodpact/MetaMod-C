@@ -46,8 +46,9 @@ static CallGameFunction()
 	int CurrentOfs = Ofs;
 	int CurrentCount = Count;
 	int CountStack = Count * 4;
+	BOOL SkipReal = FALSE;
 	BOOL OverrideResult = FALSE;
-	
+
 	F Function;
 	MGlobals.Result = MRES_UNSET;
 
@@ -55,44 +56,45 @@ static CallGameFunction()
 	{
 		if (Plugins[Index].Status != PL_RUNNING)
 			continue;
-		
+
 		__asm
 		{
 			IMUL EAX, Index, 88
-			ADD EAX, DWORD PTR Plugins
-			IMUL ECX, CurrentDest, 4
-			MOV ECX, DWORD PTR[EAX + ECX + 4]
-			MOV EAX, CurrentOfs
-			MOV EAX, DWORD PTR[ECX + EAX]
-			MOV Function, EAX
+				ADD EAX, DWORD PTR Plugins
+				IMUL ECX, CurrentDest, 4
+				MOV ECX, DWORD PTR[EAX + ECX + 4]
+				MOV EAX, CurrentOfs
+				MOV EAX, DWORD PTR[ECX + EAX]
+				MOV Function, EAX
 		}
 
 		if (!Function)
 			continue;
-		
+
 		for (Andex = CurrentCount; Andex > 0; Andex--)
 		{
 			__asm MOV EAX, Andex
 			__asm PUSH[EBP + EAX * 4 + 4];
 		}
-		
+
 		__asm CALL Function
 		__asm ADD ESP, CountStack
 		__asm MOV Result, EAX
 
-		if (MGlobals.Result == MRES_OVERRIDE)
+		if (MGlobals.Result > MRES_OVERRIDE)
+			SkipReal = TRUE;
+
+		if (MGlobals.Result > MRES_HANDLED)
 		{
 			OverrideResult = TRUE;
 			__asm MOV EAX, Result;
 			__asm MOV RetValOver, EAX;
 		}
-		else if (MGlobals.Result == MRES_SUPERCEDE)
-		{
-			__asm MOV EAX, Result;
-			return;
-		}
 	}
-	
+
+	if (SkipReal)
+		goto MidLoop_Ignore;
+
 	for (Andex = CurrentCount; Andex > 0; Andex--)
 	{
 		__asm MOV EAX, Andex
@@ -102,19 +104,19 @@ static CallGameFunction()
 	__asm
 	{
 		MOV EAX, DWORD PTR CurrentOfs
-		CMP CurrentDest, 1
-		JE SHORT MidLoop_NewDLLFuncs
-		JG SHORT MidLoop_Engine
-		ADD EAX, OFFSET GameDLLFuncs
-		JMP SHORT MidLoop_Continue
-	MidLoop_NewDLLFuncs:
+			CMP CurrentDest, 1
+			JE SHORT MidLoop_NewDLLFuncs
+			JG SHORT MidLoop_Engine
+			ADD EAX, OFFSET GameDLLFuncs
+			JMP SHORT MidLoop_Continue
+		MidLoop_NewDLLFuncs :
 		ADD EAX, OFFSET GameNewDLLFuncs
-		JMP SHORT MidLoop_Continue
-	MidLoop_Engine:
+			JMP SHORT MidLoop_Continue
+		MidLoop_Engine :
 		ADD EAX, OFFSET EngineFuncs
-	MidLoop_Continue:
+		MidLoop_Continue :
 		MOV EAX, DWORD PTR[EAX]
-		MOV Function, EAX
+			MOV Function, EAX
 	}
 
 	if (Function)
@@ -129,22 +131,24 @@ static CallGameFunction()
 
 	__asm ADD ESP, CountStack
 
+MidLoop_Ignore :
+
 	for (Index = 0; Index < PluginCount; Index++)
 	{
 		if (Plugins[Index].Status != PL_RUNNING)
 			continue;
-		
+
 		__asm
 		{
 			IMUL EAX, Index, 88
-			ADD EAX, DWORD PTR Plugins
-			IMUL ECX, CurrentDest, 4
-			MOV ECX, DWORD PTR[EAX + ECX + 16]
-			MOV EAX, CurrentOfs
-			MOV EAX, DWORD PTR[ECX + EAX]
-			MOV Function, EAX
+				ADD EAX, DWORD PTR Plugins
+				IMUL ECX, CurrentDest, 4
+				MOV ECX, DWORD PTR[EAX + ECX + 16]
+				MOV EAX, CurrentOfs
+				MOV EAX, DWORD PTR[ECX + EAX]
+				MOV Function, EAX
 		}
-		
+
 		if (!Function)
 			continue;
 
