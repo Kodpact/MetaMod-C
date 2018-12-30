@@ -11,7 +11,7 @@
 #define ENGINE_INTERFACE_VERSION 138
 #define META_INTERFACE_VERSION "5:13"
 
-#define META_VERSION "MetaMod-C (0.99 Beta)\n"
+#define META_VERSION "MetaMod-C (1.0)\n"
 #define META_AUTHOR "Created On MetaMod Basis\nAuthor: Ghost (Original Author: Will Day)"
 
 #define DEST_DLLFUNC 0

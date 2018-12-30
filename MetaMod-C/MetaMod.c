@@ -261,7 +261,7 @@ const char *MetaMod_GetPluginStatus(int Status)
 		case PL_RUNNING: return "Running";
 	}
 
-	return "";
+	return "<Missing>";
 }
 
 void MetaMod_ShowList(void)
@@ -272,7 +272,9 @@ void MetaMod_ShowList(void)
 	for (int Index = 0; Index < PluginCount; Index++)
 	{
 		Plugin *CurPlugin = &Plugins[Index];
-		ServerPrintColored(CurPlugin->Status == PL_RUNNING ? TYPE_INFO : CurPlugin->Status == PL_PAUSED ? TYPE_WARNING : TYPE_ERROR, "     %s (Status: %s)", CurPlugin->Desc, MetaMod_GetPluginStatus(CurPlugin->Status));
+		ServerPrintColored(CurPlugin->Status == PL_RUNNING ? TYPE_INFO : CurPlugin->Status == PL_PAUSED ?
+					   TYPE_WARNING : TYPE_ERROR, "     %s (Status: %s)", CurPlugin->Desc ? CurPlugin->Desc : "<Missing>",
+									  MetaMod_GetPluginStatus(CurPlugin->Status));
 
 		if (CurPlugin->Status = PL_RUNNING)
 			TotalRunning++;
